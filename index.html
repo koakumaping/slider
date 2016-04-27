@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="borderbox">
+<head>
+<meta charset="utf-8"><!-- 
+<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/> -->
+<meta name="format-detection" content="telephone=no" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<link rel="icon" type="image/x-icon" href="./img/favicon.ico">
+<title>轮播</title>
+
+<link rel="stylesheet" href="./css/slider.css">
+<style type="text/css">
+    #body {
+        width: 100%;
+        height: 2000px;
+    }
+</style>
+<script type="text/javascript">
+    !function(G, k) {
+        function D() {
+            var c = A.getBoundingClientRect().width;
+            c / B > 540 && (c = 540 * B);
+            var a = c / 10;
+            A.style.fontSize = a + "px", H.rem = G.rem = a
+        }
+        var J, w = G.document,
+            A = w.documentElement,
+            z = w.querySelector('meta[name="viewport"]'),
+            C = w.querySelector('meta[name="flexible"]'),
+            B = 0,
+            q = 0,
+            H = k.flexible || (k.flexible = {});
+        if (z) {
+            console.warn("将根据已有的meta标签来设置缩放比例");
+            var y = z.getAttribute("content").match(/initial\-scale=([\d\.]+)/);
+            y && (q = parseFloat(y[1]), B = parseInt(1 / q))
+        } else {
+            if (C) {
+                var I = C.getAttribute("content");
+                if (I) {
+                    var j = I.match(/initial\-dpr=([\d\.]+)/),
+                        F = I.match(/maximum\-dpr=([\d\.]+)/);
+                    j && (B = parseFloat(j[1]), q = parseFloat((1 / B).toFixed(2))), F && (B = parseFloat(F[1]), q = parseFloat((1 / B).toFixed(2)))
+                }
+            }
+        }
+        if (!B && !q) {
+            var g = (G.navigator.appVersion.match(/android/gi), G.navigator.appVersion.match(/iphone/gi)),
+                E = G.devicePixelRatio;
+            B = g ? E >= 3 && (!B || B >= 3) ? 3 : E >= 2 && (!B || B >= 2) ? 2 : 1 : 1, q = 1 / B
+        }
+        if (A.setAttribute("data-dpr", B), !z) {
+            if (z = w.createElement("meta"), z.setAttribute("name", "viewport"), z.setAttribute("content", "initial-scale=" + q + ", maximum-scale=" + q + ", minimum-scale=" + q + ", user-scalable=no"), A.firstElementChild) {
+                A.firstElementChild.appendChild(z)
+            } else {
+                var b = w.createElement("div");
+                b.appendChild(z), w.write(b.innerHTML)
+            }
+        }
+        G.addEventListener("resize", function() {
+            clearTimeout(J), J = setTimeout(D, 300)
+        }, !1), G.addEventListener("pageshow", function(a) {
+            a.persisted && (clearTimeout(J), J = setTimeout(D, 300))
+        }, !1), "complete" === w.readyState ? w.body.style.fontSize = 12 * B + "px" : w.addEventListener("DOMContentLoaded", function() {
+            w.body.style.fontSize = 12 * B + "px"
+        }, !1), D(), H.dpr = G.dpr = B, H.refreshRem = D, H.rem2px = function(c) {
+            var a = parseFloat(c) * this.rem;
+            return "string" == typeof c && c.match(/rem$/) && (a += "px"), a
+        }, H.px2rem = function(c) {
+            var a = parseFloat(c) / this.rem;
+            return "string" == typeof c && c.match(/px$/) && (a += "rem"), a
+        }
+    }(window, window.lib || (window.lib = {}));
+</script>
+</head>
+<body id="body">
+
+    <div class="slider" id="slider">
+        <ul>
+            <li>
+                <a href="javascript:void(0);">
+                    <img src="./img/carousel/1.png" alt="img">
+                </a>
+            </li>
+
+            <li>
+                <a href="javascript:void(0);">
+                    <img src="./img/carousel/2.jpg" alt="img">
+                </a>
+            </li>
+
+            <li>
+                <a href="javascript:void(0);">
+                    <img src="./img/carousel/3.jpg" alt="3">
+                </a>
+            </li>
+
+            <li>
+                <a href="javascript:void(0);">
+                    <img src="./img/carousel/4.jpg" alt="4">
+                </a>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript" src="./js/slider.js"></script>
+    <script type="text/javascript">
+        var carousel = new slider('#slider');
+    </script>
+</body>
+</html>
