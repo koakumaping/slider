@@ -74,14 +74,13 @@
                 // 上下滑动
                 if ( self.canMoveY ) {
                     window.scrollBy(0, self.config.y - self.config.yCurrent);
-                    if (Math.abs(self.config.y - self.config.yCurrent) > 1) {
+                    if (Math.abs(self.config.y - self.config.yCurrent) > 10) {
                         self.canMoveX = false;
                     }
                 }
                 
                 // 左右滑动
                 if (self.canMoveX) {
-                    self.canMoveY = false;
                     if (self.index === 0) {
                         self.indexPrev = self.length - 1;
                         self.indexFlag = false;
@@ -129,27 +128,31 @@
                     self.prevCalPosition = self.calPosition - self.clientWidth;
                     self.nextCalPosition = self.clientWidth + self.calPosition;
                     
-                    if (elmentPrev) {
-                        elmentLiPrev.style.visibility = 'visible';
-                        elmentPrev.style.transform = 'translate3d(' + self.prevCalPosition +'px,0,0)';
-                    }
+                    if ( Math.abs(self.calPosition) > 20 ) {
+                        self.canMoveY = false;
+                        console.log(self.calPosition);
+                        if (elmentPrev) {
+                            elmentLiPrev.style.visibility = 'visible';
+                            elmentPrev.style.transform = 'translate3d(' + self.prevCalPosition +'px,0,0)';
+                        }
 
-                    if (elmentNext) {
-                        elmentLiNext.style.visibility = 'visible';
-                        elmentNext.style.transform = 'translate3d(' + self.nextCalPosition +'px,0,0)';
-                    }
-                    
-                    self.elment.style.transform = 'translate3d(' + self.calPosition +'px,0,0)';
+                        if (elmentNext) {
+                            elmentLiNext.style.visibility = 'visible';
+                            elmentNext.style.transform = 'translate3d(' + self.nextCalPosition +'px,0,0)';
+                        }
+                        
+                        self.elment.style.transform = 'translate3d(' + self.calPosition +'px,0,0)';
 
-                    // 向左滑动
-                    if (self.calPosition > 0) {
-                        self.config.direction = 'left';
-                        elmentLiNext.style.visibility = 'hidden';
-                    } else if (self.calPosition < 0) {
-                        self.config.direction = 'right';
-                        elmentLiPrev.style.visibility = 'hidden';
-                    } else {
-                        self.config.direction = 'stay';
+                        // 向左滑动
+                        if (self.calPosition > 0) {
+                            self.config.direction = 'left';
+                            elmentLiNext.style.visibility = 'hidden';
+                        } else if (self.calPosition < 0) {
+                            self.config.direction = 'right';
+                            elmentLiPrev.style.visibility = 'hidden';
+                        } else {
+                            self.config.direction = 'stay';
+                        }
                     }
                 }
             });
@@ -193,8 +196,6 @@
 
             var elmentLi = self.li[self.index],
                 elmentLiPrev = self.li[self.indexPrev];
-
-            clearInterval(self.sIR);
             
             elmentLi.style.visibility = 'visible';
             elmentLiPrev.style.visibility = 'visible';
