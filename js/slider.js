@@ -81,7 +81,7 @@
                 // 上下滑动
                 if ( self.canMoveY ) {
                     window.scrollBy(0, self.config.y - self.config.yCurrent);
-                    if (Math.abs(self.config.y - self.config.yCurrent) > 20) {
+                    if (Math.abs(self.config.y - self.config.yCurrent) > 12) {
                         self.canMoveX = false;
                     }
                 }
@@ -137,7 +137,6 @@
                     
                     if ( Math.abs(self.calPosition) > 20 ) {
                         self.canMoveY = false;
-                        console.log(self.calPosition);
                         if (elmentPrev) {
                             elmentLiPrev.style.visibility = 'visible';
                             elmentPrev.style.transform = 'translate3d(' + self.prevCalPosition +'px,0,0)';
@@ -167,7 +166,10 @@
             self.selector.querySelectorAll('ul')[0].addEventListener('touchend', function (event) {
                 self.canMoveX = true;
                 self.canMoveY = true;
-                self.isRunning = true;
+
+                if (self.isRunning) {
+                    return true;
+                }
 
                 switch (self.config.direction) {
                     case 'left':
@@ -210,6 +212,7 @@
             elmentLiPrev.style.visibility = 'visible';
 
             var _run = function () {
+                self.isRunning = true;
                 self.prevCalPosition = self.prevCalPosition + self.config.speed;
                 self.calPosition = self.calPosition + self.config.speed;
 
@@ -264,6 +267,7 @@
             self.x = self.calPosition + self.clientWidth;  //prev
 
             var _run = function () {
+                self.isRunning = true;
                 self.x = self.x - self.config.speed;
                 self.calPosition = self.calPosition - self.config.speed;
 
