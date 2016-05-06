@@ -43,6 +43,8 @@
         this.indexPrev;
         this.indexNext;
         this.indexFlag = true;
+        this.canMoveX = true;
+        this.canMoveY = true;
 
         // 初始化元素
         this.li = this.selector.querySelectorAll('li');
@@ -70,83 +72,91 @@
                 event.preventDefault();
 
                 // 上下滑动
-                window.scrollBy(0, self.config.y - self.config.yCurrent);
-
+                if ( self.canMoveY ) {
+                    window.scrollBy(0, self.config.y - self.config.yCurrent);
+                    if (Math.abs(self.config.y - self.config.yCurrent) > 1) {
+                        self.canMoveX = false;
+                    }
+                }
+                
                 // 左右滑动
+                if (self.canMoveX) {
+                    self.canMoveY = false;
+                    if (self.index === 0) {
+                        self.indexPrev = self.length - 1;
+                        self.indexFlag = false;
+                    } else {
+                        self.indexPrev = self.index - 1;
+                    }
 
-                if (self.index === 0) {
-                    self.indexPrev = self.length - 1;
-                    self.indexFlag = false;
-                } else {
-                    self.indexPrev = self.index - 1;
-                }
+                    if (self.index >= self.length - 1) {
+                        self.indexNext = 0;
+                        self.indexFlag = false;
+                    } else {
+                        self.indexNext = self.index + 1;
+                    }
 
-                if (self.index >= self.length - 1) {
-                    self.indexNext = 0;
-                    self.indexFlag = false;
-                } else {
-                    self.indexNext = self.index + 1;
-                }
+                    self.calPosition = self.config.xCurrent - self.config.x;
 
-                self.calPosition = self.config.xCurrent - self.config.x;
+                    // 防止超出
+                    if (self.calPosition >= self.clientWidth) {
+                        self.calPosition = self.clientWidth;
+                    }
 
-                // 防止超出
-                if (self.calPosition >= self.clientWidth) {
-                    self.calPosition = self.clientWidth;
-                }
+                    if (self.calPosition <= - self.clientWidth) {
+                        self.calPosition = - self.clientWidth;
+                    }
 
-                if (self.calPosition <= - self.clientWidth) {
-                    self.calPosition = - self.clientWidth;
-                }
+                    self.elment = self.li[self.index].querySelectorAll('img')[0];
 
-                self.elment = self.li[self.index].querySelectorAll('img')[0];
+                    var elmentPrev,
+                        elmentNext;
+                    
+                    if (self.calPosition >= 0) {
+                        // 向右滑动
+                        elmentPrev = self.li[self.indexPrev].querySelectorAll('img')[0];
+                    } else {
+                        // 向左滑动
+                        elmentNext = self.li[self.indexNext].querySelectorAll('img')[0];
+                    }
+                    
+                    var elmentLi = self.li[self.index],
+                        elmentLiPrev = self.li[self.indexPrev],
+                        elmentLiNext = self.li[self.indexNext];
 
-                var elmentPrev,
-                    elmentNext;
-                
-                if (self.calPosition >= 0) {
-                    // 向右滑动
-                    elmentPrev = self.li[self.indexPrev].querySelectorAll('img')[0];
-                } else {
+                    elmentLi.style.visibility = 'visible';
+
+                    self.prevCalPosition = self.calPosition - self.clientWidth;
+                    self.nextCalPosition = self.clientWidth + self.calPosition;
+                    
+                    if (elmentPrev) {
+                        elmentLiPrev.style.visibility = 'visible';
+                        elmentPrev.style.transform = 'translate3d(' + self.prevCalPosition +'px,0,0)';
+                    }
+
+                    if (elmentNext) {
+                        elmentLiNext.style.visibility = 'visible';
+                        elmentNext.style.transform = 'translate3d(' + self.nextCalPosition +'px,0,0)';
+                    }
+                    
+                    self.elment.style.transform = 'translate3d(' + self.calPosition +'px,0,0)';
+
                     // 向左滑动
-                    elmentNext = self.li[self.indexNext].querySelectorAll('img')[0];
+                    if (self.calPosition > 0) {
+                        self.config.direction = 'left';
+                        elmentLiNext.style.visibility = 'hidden';
+                    } else if (self.calPosition < 0) {
+                        self.config.direction = 'right';
+                        elmentLiPrev.style.visibility = 'hidden';
+                    } else {
+                        self.config.direction = 'stay';
+                    }
                 }
-                
-                var elmentLi = self.li[self.index],
-                    elmentLiPrev = self.li[self.indexPrev],
-                    elmentLiNext = self.li[self.indexNext];
-
-                elmentLi.style.visibility = 'visible';
-
-                self.prevCalPosition = self.calPosition - self.clientWidth;
-                self.nextCalPosition = self.clientWidth + self.calPosition;
-                
-                if (elmentPrev) {
-                    elmentLiPrev.style.visibility = 'visible';
-                    elmentPrev.style.transform = 'translate3d(' + self.prevCalPosition +'px,0,0)';
-                }
-
-                if (elmentNext) {
-                    elmentLiNext.style.visibility = 'visible';
-                    elmentNext.style.transform = 'translate3d(' + self.nextCalPosition +'px,0,0)';
-                }
-                
-                self.elment.style.transform = 'translate3d(' + self.calPosition +'px,0,0)';
-
-                // 向左滑动
-                if (self.calPosition > 0) {
-                    self.config.direction = 'left';
-                    elmentLiNext.style.visibility = 'hidden';
-                } else if (self.calPosition < 0) {
-                    self.config.direction = 'right';
-                    elmentLiPrev.style.visibility = 'hidden';
-                } else {
-                    self.config.direction = 'stay';
-                }
-
             });
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchend', function (event) {
+                self.canMoveX = true;
+                self.canMoveY = true;
                 switch (self.config.direction) {
                     case 'left':
                         self.prev();
