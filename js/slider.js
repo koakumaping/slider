@@ -31,8 +31,7 @@
         this.selector = document.querySelectorAll(selector)[0];
         this.length = this.selector.querySelectorAll('li').length;
         this.clientWidth = this.selector.clientWidth;
-        this.sIL,
-        this.sIR;
+        this.isRunning = false;
 
         this.calPosition;
         this.prevCalPosition;
@@ -62,19 +61,27 @@
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchstart', function (event) {
                 event.preventDefault();
+                if (self.isRunning) {
+                    return true;
+                }
+
                 self.config.x = event.changedTouches[0].pageX;
                 self.config.y = event.changedTouches[0].pageY;
             });
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchmove', function (event) {
+                event.preventDefault();
+                if (self.isRunning) {
+                    return true;
+                }
+
                 self.config.xCurrent = event.changedTouches[0].pageX;
                 self.config.yCurrent = event.changedTouches[0].pageY;
-                event.preventDefault();
 
                 // 上下滑动
                 if ( self.canMoveY ) {
                     window.scrollBy(0, self.config.y - self.config.yCurrent);
-                    if (Math.abs(self.config.y - self.config.yCurrent) > 10) {
+                    if (Math.abs(self.config.y - self.config.yCurrent) > 20) {
                         self.canMoveX = false;
                     }
                 }
@@ -160,6 +167,8 @@
             self.selector.querySelectorAll('ul')[0].addEventListener('touchend', function (event) {
                 self.canMoveX = true;
                 self.canMoveY = true;
+                self.isRunning = true;
+
                 switch (self.config.direction) {
                     case 'left':
                         self.prev();
@@ -218,7 +227,7 @@
 
                     elmentLi.style.visibility = 'hidden';
 
-                    clearInterval(self.sIR);
+                    self.isRunning = false;
 
                     if (!indexFlag) {
                         self.index = self.length - 1;
@@ -272,7 +281,7 @@
 
                     elmentLi.style.visibility = 'hidden';
 
-                    clearInterval(self.sIR);
+                    self.isRunning = false;
                     
                     if (indexFlag) {
                         self.index ++;
@@ -287,7 +296,8 @@
         },
 
         stay: function () {
-
+            var self = this;
+            self.isRunning = false;
         },
 
         requestAnimationFrame: function () {
