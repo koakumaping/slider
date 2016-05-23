@@ -1,6 +1,6 @@
 /**
  * carousel
- * @authors Ping XF (koakumaping@163.com)
+ * @authors Ping YF (koakumaping@163.com)
  * @date    2016-04-14 10:48:35
  * @version $Id$
  */
@@ -57,6 +57,8 @@
     slider.prototype = {
         init: function () {
             var self = this;
+            self.addFocus();
+            self.setActiveFocus();
             self.requestAnimationFrame();
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchstart', function (event) {
@@ -210,6 +212,9 @@
                 indexPrev = index - 1;
             }
 
+            console.log(self.index, self.length)
+            
+
             var elment = self.li[self.index].querySelectorAll('img')[0],
                 elmentPrev = self.li[self.indexPrev].querySelectorAll('img')[0];
 
@@ -245,6 +250,7 @@
                     } else {
                         self.index --;
                     }
+                    self.setActiveFocus();
                 }
             }
 
@@ -264,6 +270,9 @@
             } else {
                 indexNext = index + 1;
             }
+
+            console.log(self.index, self.length)
+            
 
             var li = document.querySelectorAll('li');
             var elment = li[index].querySelectorAll('img')[0];
@@ -300,6 +309,7 @@
                     } else {
                         self.index = 0;
                     }
+                    self.setActiveFocus();
                 }
             }
 
@@ -310,6 +320,33 @@
         stay: function () {
             var self = this;
             self.isRunning = false;
+        },
+
+        // 添加指示器
+        addFocus: function () {
+            var self = this;
+            var innerHtml = ''
+            var baseHtml = '<span class="focus-horizontal-bullet"></span>'
+            var $focus = this.selector.querySelector('.focus-horizontal')
+
+            for (var i = 0; i < self.length; ++i) {
+                innerHtml += baseHtml
+            }
+
+            $focus.innerHTML = innerHtml
+        },
+
+        setActiveFocus: function () {
+
+            var $bullets = this.selector.querySelectorAll('.focus-horizontal-bullet')
+
+            for (var i = 0, l = $bullets.length; i < l; ++i) {
+                if (i !== this.index) {
+                    $bullets[i].className = 'focus-horizontal-bullet'
+                } else {
+                    $bullets[i].className = 'focus-horizontal-bullet active'
+                }
+            }
         },
 
         requestAnimationFrame: function () {
