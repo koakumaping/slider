@@ -18,7 +18,7 @@
     'use strict';
     function slider (selector) {
         this.config = {
-            speed: 35,
+            speed: 600,
             x: 0,
             xCurrent: 0,
             xEnd: 0,
@@ -210,10 +210,7 @@
                 indexFlag = false;
             } else {
                 indexPrev = index - 1;
-            }
-
-            console.log(self.index, self.length)
-            
+            }            
 
             var elment = self.li[self.index].querySelectorAll('img')[0],
                 elmentPrev = self.li[self.indexPrev].querySelectorAll('img')[0];
@@ -223,11 +220,13 @@
             
             elmentLi.style.visibility = 'visible';
             elmentLiPrev.style.visibility = 'visible';
-
+            var start = 0
             var _run = function () {
                 self.isRunning = true;
-                self.prevCalPosition = self.prevCalPosition + self.config.speed;
-                self.calPosition = self.calPosition + self.config.speed;
+
+                start ++
+                self.prevCalPosition = self.easeOutCubic(start, self.prevCalPosition, self.clientWidth, self.config.speed);
+                self.calPosition = self.easeOutCubic(start, self.calPosition, self.clientWidth, self.config.speed);
 
                 elmentPrev.style.transform = 'translate3d(' + self.prevCalPosition +'px,0,0)';
                 elment.style.transform = 'translate3d(' + self.calPosition +'px,0,0)';
@@ -269,10 +268,7 @@
                 indexFlag = false;
             } else {
                 indexNext = index + 1;
-            }
-
-            console.log(self.index, self.length)
-            
+            }            
 
             var li = document.querySelectorAll('li');
             var elment = li[index].querySelectorAll('img')[0];
@@ -282,11 +278,13 @@
             var elmentLiNext = li[indexNext];
             
             self.x = self.calPosition + self.clientWidth;  //prev
-
+            var start = 0
             var _run = function () {
                 self.isRunning = true;
-                self.x = self.x - self.config.speed;
-                self.calPosition = self.calPosition - self.config.speed;
+
+                start ++
+                self.x = self.easeOutCubic(start, self.x, -self.clientWidth, self.config.speed);
+                self.calPosition = self.easeOutCubic(start, self.calPosition, -self.clientWidth, self.config.speed);
 
                 elmentNext.style.transform = 'translate3d(' + self.x +'px,0,0)';
                 elment.style.transform = 'translate3d(' + self.calPosition +'px,0,0)';
@@ -334,6 +332,10 @@
             }
 
             $focus.innerHTML = innerHtml
+        },
+
+        easeOutCubic: function(t, b, c, d) {
+            return c * ((t = t/d - 1) * t * t + 1) + b;
         },
 
         setActiveFocus: function () {
