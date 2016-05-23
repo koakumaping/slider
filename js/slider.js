@@ -105,12 +105,16 @@
                     self.calPosition = self.config.xCurrent - self.config.x;
 
                     // 防止超出
-                    if (self.calPosition >= self.clientWidth) {
-                        self.calPosition = self.clientWidth;
-                    }
+                    if ( self.length > 1 ){
+                        if (self.calPosition >= self.clientWidth) {
+                            self.calPosition = self.clientWidth;
+                        }
 
-                    if (self.calPosition <= - self.clientWidth) {
-                        self.calPosition = - self.clientWidth;
+                        if (self.calPosition <= - self.clientWidth) {
+                            self.calPosition = - self.clientWidth;
+                        }
+                    } else {
+                        return false
                     }
 
                     self.elment = self.li[self.index].querySelectorAll('img')[0];
@@ -152,10 +156,14 @@
                         // 向左滑动
                         if (self.calPosition > 0) {
                             self.config.direction = 'left';
-                            elmentLiNext.style.visibility = 'hidden';
+                            if ( self.length > 2 ){
+                                elmentLiNext.style.visibility = 'hidden';
+                            }
                         } else if (self.calPosition < 0) {
                             self.config.direction = 'right';
-                            elmentLiPrev.style.visibility = 'hidden';
+                            if ( self.length > 2 ){
+                                elmentLiPrev.style.visibility = 'hidden';
+                            }
                         } else {
                             self.config.direction = 'stay';
                         }
