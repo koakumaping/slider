@@ -18,6 +18,7 @@
     'use strict';
     function slider (selector) {
         this.config = {
+            autoPlayTime: 3, // 单位秒
             speed: 600,
             x: 0,
             xCurrent: 0,
@@ -28,16 +29,21 @@
             direction: 'stay'
         };
         
+        // 定时器
+        this.timer;
+
+        // 选择器
         this.selector = document.querySelectorAll(selector)[0];
         this.length = this.selector.querySelectorAll('li').length;
         this.clientWidth = this.selector.clientWidth;
         this.isRunning = false;
 
-        this.calPosition;
+        // 位置
+        this.calPosition = 0;
         this.prevCalPosition;
         this.nextCalPosition;
 
-        // 记忆位置
+        // 状态
         this.index = 0;
         this.indexPrev;
         this.indexNext;
@@ -61,8 +67,14 @@
             self.setActiveFocus();
             self.requestAnimationFrame();
 
+            // 启动自动播放
+            self.autoPlay()
+
             self.selector.querySelectorAll('ul')[0].addEventListener('touchstart', function (event) {
                 event.preventDefault();
+                // 清空定时器
+                clearInterval(self.timer)
+
                 if (self.isRunning) {
                     return true;
                 }
@@ -194,10 +206,21 @@
                         self.stay();
                         break;
                 }
+
+                // 启动自动播放
+                self.autoPlay()
             });
         },
 
-        prev: function (index) {
+        autoPlay: function () {
+            var self = this
+
+            self.timer = setInterval(function () {
+                self.next()
+            }, this.config.autoPlayTime * 1000)
+        },
+
+        prev: function () {
 
             var self = this;
 
@@ -210,7 +233,7 @@
                 indexFlag = false;
             } else {
                 indexPrev = index - 1;
-            }            
+            }
 
             var elment = self.li[self.index].querySelectorAll('img')[0],
                 elmentPrev = self.li[self.indexPrev].querySelectorAll('img')[0];
@@ -220,6 +243,7 @@
             
             elmentLi.style.visibility = 'visible';
             elmentLiPrev.style.visibility = 'visible';
+
             var start = 0
             var _run = function () {
                 self.isRunning = true;
@@ -249,14 +273,14 @@
                     } else {
                         self.index --;
                     }
-                    self.setActiveFocus();
+                    self.setActiveFocus()
                 }
             }
 
             _run();
         },
 
-        next: function (index) {
+        next: function () {
             var self = this;
 
             var index = self.index;
@@ -277,7 +301,12 @@
             var elmentLi = li[index];
             var elmentLiNext = li[indexNext];
             
+            elmentLi.style.visibility = 'visible';
+            elmentLiNext.style.visibility = 'visible';
+
+            // 初始化
             self.x = self.calPosition + self.clientWidth;  //prev
+
             var start = 0
             var _run = function () {
                 self.isRunning = true;
@@ -307,7 +336,7 @@
                     } else {
                         self.index = 0;
                     }
-                    self.setActiveFocus();
+                    self.setActiveFocus()
                 }
             }
 
@@ -318,6 +347,8 @@
         stay: function () {
             var self = this;
             self.isRunning = false;
+            // 启动自动播放
+            self.autoPlay()
         },
 
         // 添加指示器
@@ -334,10 +365,6 @@
             $focus.innerHTML = innerHtml
         },
 
-        easeOutCubic: function(t, b, c, d) {
-            return c * ((t = t/d - 1) * t * t + 1) + b;
-        },
-
         setActiveFocus: function () {
 
             var $bullets = this.selector.querySelectorAll('.focus-horizontal-bullet')
@@ -349,6 +376,17 @@
                     $bullets[i].className = 'focus-horizontal-bullet active'
                 }
             }
+        },
+
+        /*
+         * t: current time（当前时间）；
+         * b: beginning value（初始值）；
+         * c: change in value（变化量）；
+         * d: duration（持续时间）。
+         * you can visit 'http://easings.net/zh-cn' to get effect
+        */
+        easeOutCubic: function(t, b, c, d) {
+            return c * ((t = t/d - 1) * t * t + 1) + b;
         },
 
         requestAnimationFrame: function () {
