@@ -214,14 +214,7 @@
 
         autoPlay: function () {
             var self = this
-            var lastTime = +new Date
-
             self.timer = setInterval(function () {
-                if(Math.abs(+new Date - lastTime) > 3000) {
-                    console.log('从后台切回！');
-                }
-                lastTime = +new Date
-
                 self.next()
             }, this.config.autoPlayTime * 1000)
         },
@@ -230,7 +223,6 @@
 
             var self = this;
 
-            var index = self.index;
             var indexPrev,
                 indexFlag = true;
 
@@ -238,7 +230,7 @@
                 indexPrev = self.length - 1;
                 indexFlag = false;
             } else {
-                indexPrev = index - 1;
+                indexPrev = self.index - 1;
             }
 
             var elment = self.li[self.index].querySelectorAll('img')[0],
@@ -277,7 +269,9 @@
                     if (!indexFlag) {
                         self.index = self.length - 1;
                     } else {
-                        self.index --;
+                        if (self.index > 0) {
+                            self.index --;
+                        }
                     }
                     self.setActiveFocus()
                 }
@@ -289,7 +283,6 @@
         next: function () {
             var self = this;
 
-            var index = self.index;
             var indexNext,
                 indexFlag = true;
 
@@ -297,15 +290,16 @@
                 indexNext = 0;
                 indexFlag = false;
             } else {
-                indexNext = index + 1;
-            }            
+                indexNext = self.index + 1;
+            }
 
-            var li = document.querySelectorAll('li');
-            var elment = li[index].querySelectorAll('img')[0];
-            var elmentNext = li[indexNext].querySelectorAll('img')[0];
+            // var li = document.querySelectorAll('li');
+            console.log(self.index)
+            var elment =self.li[self.index].querySelector('img');
+            var elmentNext = self.li[indexNext].querySelector('img');
 
-            var elmentLi = li[index];
-            var elmentLiNext = li[indexNext];
+            var elmentLi = self.li[self.index];
+            var elmentLiNext = self.li[indexNext];
             
             elmentLi.style.visibility = 'visible';
             elmentLiNext.style.visibility = 'visible';
@@ -338,7 +332,9 @@
                     self.isRunning = false;
                     
                     if (indexFlag) {
-                        self.index ++;
+                        if (self.index < self.length - 1) {
+                            self.index ++;
+                        }
                     } else {
                         self.index = 0;
                     }
