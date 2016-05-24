@@ -293,8 +293,6 @@
                 indexNext = self.index + 1;
             }
 
-            // var li = document.querySelectorAll('li');
-            console.log(self.index)
             var elment =self.li[self.index].querySelector('img');
             var elmentNext = self.li[indexNext].querySelector('img');
 
