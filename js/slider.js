@@ -214,8 +214,14 @@
 
         autoPlay: function () {
             var self = this
+            var lastTime = +new Date
 
             self.timer = setInterval(function () {
+                if(Math.abs(+new Date - lastTime) > 3000) {
+                    console.log('从后台切回！');
+                }
+                lastTime = +new Date
+
                 self.next()
             }, this.config.autoPlayTime * 1000)
         },
@@ -347,8 +353,6 @@
         stay: function () {
             var self = this;
             self.isRunning = false;
-            // 启动自动播放
-            self.autoPlay()
         },
 
         // 添加指示器
