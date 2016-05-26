@@ -18,7 +18,7 @@
     'use strict';
     function slider (selector) {
         this.config = {
-            autoPlayTime: 1, // 单位秒
+            autoPlayTime: 3, // 单位秒
             speed: 600,
             x: 0,
             xCurrent: 0,
@@ -73,8 +73,8 @@
             self.autoPause()
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchstart', function (event) {
-                // 清空定时器
-                clearInterval(self.timer)
+                // 禁止自动播放
+                self.isPaused = true
 
                 if (self.isRunning) {
                     return true;
@@ -209,7 +209,7 @@
                 }
 
                 // 启动自动播放
-                self.autoPlay()
+                self.isPaused = false
             });
         },
 
