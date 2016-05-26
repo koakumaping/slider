@@ -74,7 +74,7 @@
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchstart', function (event) {
                 // 禁止自动播放
-                self.isPaused = true
+                self.cancelAutoPlay()
 
                 if (self.isRunning) {
                     return true;
@@ -209,20 +209,23 @@
                 }
 
                 // 启动自动播放
-                self.isPaused = false
+                self.autoPlay()
             });
         },
 
         autoPlay: function () {
             var self = this
             
-            if (!self.timer) {
-                self.timer = setInterval(function () {
-                    if (!self.isPaused) {
-                        self.next()
-                    }
-                }, this.config.autoPlayTime * 1000)
-            }
+            self.timer = setInterval(function () {
+                if (!self.isPaused) {
+                    self.next()
+                }
+            }, this.config.autoPlayTime * 1000)
+        },
+
+        cancelAutoPlay: function () {
+            var self = this
+            clearInterval(self.timer)
         },
 
         autoPause: function () {
