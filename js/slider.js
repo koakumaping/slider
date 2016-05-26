@@ -73,7 +73,6 @@
             self.autoPause()
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchstart', function (event) {
-                event.preventDefault();
                 // 清空定时器
                 clearInterval(self.timer)
 
