@@ -18,7 +18,7 @@
     'use strict';
     function slider (selector) {
         this.config = {
-            autoPlayTime: 3, // 单位秒
+            autoPlayTime: 1, // 单位秒
             speed: 600,
             x: 0,
             xCurrent: 0,
@@ -31,6 +31,7 @@
         
         // 定时器
         this.timer;
+        this.isPaused = false
 
         // 选择器
         this.selector = document.querySelectorAll(selector)[0];
@@ -69,6 +70,7 @@
 
             // 启动自动播放
             self.autoPlay()
+            self.autoPause()
 
             self.selector.querySelectorAll('ul')[0].addEventListener('touchstart', function (event) {
                 event.preventDefault();
@@ -214,9 +216,25 @@
 
         autoPlay: function () {
             var self = this
-            self.timer = setInterval(function () {
-                self.next()
-            }, this.config.autoPlayTime * 1000)
+            
+            if (!self.timer) {
+                self.timer = setInterval(function () {
+                    if (!self.isPaused) {
+                        self.next()
+                    }
+                }, this.config.autoPlayTime * 1000)
+            }
+        },
+
+        autoPause: function () {
+            var self = this
+            document.addEventListener('visibilitychange', function () {
+                if(document.visibilityState === 'hidden') {
+                    self.isPaused = true
+                } else {
+                    self.isPaused = false
+                }
+            })
         },
 
         prev: function () {
