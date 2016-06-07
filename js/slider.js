@@ -16,7 +16,8 @@
     }
 })(function(){
     'use strict';
-    function slider (selector) {
+    function slider (selector, config) {
+
         this.config = {
             autoPlayTime: 3, // 单位秒
             speed: 600,
@@ -30,7 +31,7 @@
         };
         
         // 定时器
-        this.timer;
+        this.timer = null;
         this.isPaused = false
 
         // 选择器
@@ -58,11 +59,18 @@
         this.elment,
         this.elmentPrev,
         this.elmentNext;
-        this.init();
+        // 回调
+        this.callback = {
+            // 下一张轮播滚动结束调用
+            nextEnd: null
+        }
+        
+        // 初始化程序
+        this.init(config);
     };
 
     slider.prototype = {
-        init: function () {
+        init: function (config) {
             var self = this;
             self.addFocus();
             self.setActiveFocus();
@@ -132,17 +140,17 @@
                         return false
                     }
 
-                    self.elment = self.li[self.index].querySelectorAll('img')[0];
+                    self.elment = self.li[self.index].children[0];
 
                     var elmentPrev,
                         elmentNext;
                     
                     if (self.calPosition >= 0) {
                         // 向右滑动
-                        elmentPrev = self.li[self.indexPrev].querySelectorAll('img')[0];
+                        elmentPrev = self.li[self.indexPrev].children[0];
                     } else {
                         // 向左滑动
-                        elmentNext = self.li[self.indexNext].querySelectorAll('img')[0];
+                        elmentNext = self.li[self.indexNext].children[0];
                     }
                     
                     var elmentLi = self.li[self.index],
@@ -253,8 +261,8 @@
                 indexPrev = self.index - 1;
             }
 
-            var elment = self.li[self.index].querySelectorAll('img')[0],
-                elmentPrev = self.li[self.indexPrev].querySelectorAll('img')[0];
+            var elment = self.li[self.index].children[0],
+                elmentPrev = self.li[self.indexPrev].children[0];
 
             var elmentLi = self.li[self.index],
                 elmentLiPrev = self.li[self.indexPrev];
@@ -313,8 +321,8 @@
                 indexNext = self.index + 1;
             }
 
-            var elment =self.li[self.index].querySelector('img');
-            var elmentNext = self.li[indexNext].querySelector('img');
+            var elment =self.li[self.index].children[0];
+            var elmentNext = self.li[indexNext].children[0];
 
             var elmentLi = self.li[self.index];
             var elmentLiNext = self.li[indexNext];
@@ -357,6 +365,11 @@
                         self.index = 0;
                     }
                     self.setActiveFocus()
+
+                    // 回调
+                    if (self.isFunction(self.callback.nextEnd)) {
+                        self.callback.nextEnd()
+                    }
                 }
             }
 
@@ -431,6 +444,38 @@
                 window.cancelAnimationFrame = function(id) {
                     clearTimeout(id);
                 };
+            }
+        },
+
+        isFunction: function (fn) {
+            return Object.prototype.toString.call(fn) === '[object Function]'
+        },
+
+        assign: function () {
+            // 兼容处理,IE不支持Object.assign
+            if (!Object.assign) {
+                Object.defineProperty(Object, "assign", {
+                    enumerable: false,
+                    configurable: true,
+                    writable: true,
+                    value: function(target, firstSource) {
+                        "use strict";
+                        if (target === undefined || target === null)
+                            throw new TypeError("Cannot convert first argument to object");
+                        var to = Object(target);
+                        for (var i = 1; i < arguments.length; i++) {
+                            var nextSource = arguments[i];
+                            if (nextSource === undefined || nextSource === null) continue;
+                            var keysArray = Object.keys(Object(nextSource));
+                            for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+                              var nextKey = keysArray[nextIndex];
+                              var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+                              if (desc !== undefined && desc.enumerable) to[nextKey] = nextSource[nextKey];
+                            }
+                        }
+                        return to;
+                    }
+                });
             }
         }
     }
